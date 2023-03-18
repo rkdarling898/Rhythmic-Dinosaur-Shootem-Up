@@ -1,0 +1,16 @@
+* {
+    margin: 0px;
+}
+
+body {
+    display: grid;
+    background-color: rgb(46, 46, 46);
+    width: 100vw;
+    height: 100vh;
+    justify-items: center;
+    align-items: center;
+}
+
+canvas {
+    background-color: black;
+}
