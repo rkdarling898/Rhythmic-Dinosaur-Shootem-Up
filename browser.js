@@ -2,10 +2,8 @@
 const canvas = document.getElementById('game-canvas');
 const ctx = canvas.getContext('2d')
 
-import { Player, Bullet } from "./main.js";
-
-const bulletArr = []
-let bulletCount = 0
+import { Player } from "./entities.js";
+import { Gun, Bullet } from "./gun.js";
 
 //Window Adjustments
 canvas.width = 95 * (window.innerWidth / 100)
@@ -21,48 +19,30 @@ window.addEventListener('resize', () => {
 })
 
 //Rendering game loop
-const player = new Player(center.x - 20, center.y - 20, canvas, ctx)
+const gun = new Gun(canvas)
+const player = new Player(center.x - 20, center.y - 20, gun)
 
 const bkgImg = new Image
 bkgImg.src = './images/main-background.png'
 
+const drawGame = () => {
+    if (player.gun.bullets > 0) player.gun.draw()
+    player.draw(canvas, player.x, player.y, player.direction)
+}
+
 const gameLoop = () => {
+    ctx.fillStyle = 'black'
+    ctx.fillRect(0, 0, canvas.width, canvas.height)
     ctx.drawImage(bkgImg, 0.025 * canvas.width, 0.025 * canvas.height, 0.95 * canvas.width, 0.95 * canvas.height)
 
-    player.draw(canvas)
-
-    if (bulletArr.length > 0) {
-        for (let i = 0;i < bulletArr.length;i++) {
-            console.log(bulletArr[i])
-            bulletArr[i].refresh(bulletArr, canvas)
-            if (bulletArr.length > 0) bulletArr[i].draw(canvas)
-        }
-    }
+    player.gun.draw()
+    player.draw(canvas, player.x, player.y, player.direction)
 
     requestAnimationFrame(gameLoop)
 }
 
 //Movement
-window.addEventListener('keydown', (e) => {
-    switch (e.code) {
-        case 'KeyW':
-            player.direction = 'up'
-            break;
-        case 'KeyA':
-            player.direction = 'left'
-            break;
-        case 'KeyS':
-            player.direction = 'down'
-            break;
-        case 'KeyD':
-            player.direction = 'right'
-            break;
-        case 'Space':
-            let x = new Bullet(player.x, player.y, player.direction)
-            bulletCount += 1
-            x.id = bulletCount
-            bulletArr.unshift(x)
-    }
-})
+document.addEventListener('keydown', player.keydown.bind(player))
+document.addEventListener('keyup', player.keyup.bind(player))
 
 gameLoop()
